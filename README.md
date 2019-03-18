@@ -24,3 +24,7 @@ A flag used to ignore games with draw results. Useful when you are only interest
 #### --minpiecevalue [value]
 An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 62 from 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`
+
+#### --log [value]
+An option used to save logs to all.log file. value can be **debug, info, warning, error and critical**, default is critical. If you want to see all the logs including the engine analysis, use value debug. Error messages will be saved in error.log file.\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --log debug`
