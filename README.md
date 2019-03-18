@@ -30,7 +30,7 @@ An option used to save logs to all.log file. value can be **debug, info, warning
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --log debug`
 
 ### D. Output
-An example output epd would look like this.\
+An example output epd would look like this.
 
 `4rbrk/5Rpp/p3b3/1p1B4/4p3/1P2P3/PB6/2K3R1 w - - bm Rxf8; ce 323; sm Rxf8; acd 28; acs 20; fmvn 28; hmvc 0; pv Rxf8 Rexf8 Bxe6 h6 Bxg8; c0 "Cheparinov, Ivan - Zeng, Chongsheng, TCh-CHN 2018, China CHN, 2018.04.11, R1.2"; c1 "Complexity: 2"; c2 "bestscore2: -28"; c3 "Analyzing engine: Stockfish 10 64 POPCNT";`
 
