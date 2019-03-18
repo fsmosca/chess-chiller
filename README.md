@@ -7,6 +7,11 @@ Read pgn files, parse positions in the game and save interesting positions for p
 * Chess engines that supports multipv and movetime commands 
 * PGN file
 
+Python 3 can be found at https://www.python.org/downloads/ \
+Python-chess can be found at https://github.com/niklasf/python-chess \
+Chess engine that supports multipv and movetime is Stockfish. Download it from https://stockfishchess.org/download/ \
+PGN file which contain game records can be downloaded from http://theweekinchess.com/
+
 ### B. Command line
 python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --threads 1 --hash 128 --mintime 5.0 --maxtime 20.0
 
