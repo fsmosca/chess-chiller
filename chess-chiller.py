@@ -174,13 +174,8 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
     curboard = game_end.board()
     
     while curboard:
-        board = curboard
-        
+        board = curboard        
         fmvn = board.fullmove_number
-        stm = board.turn
-        if fmvn == 1 and stm == chess.WHITE:
-            logging.warning('This is startpos, skip this game')
-            break
         
         if fmvn < analysis_start_move_num:
             logging.warning('move start limit is reached, exit from this game')
