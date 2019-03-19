@@ -42,3 +42,14 @@ An example output epd would look like this.
 The board image from that epd.
 
 ![](https://i.imgur.com/0x41SJp.png "From chess-chiller epd output, white to move!")
+
+### E. Process flow
+1. The script will read the pgn file given from --inpgn [user pgn file].
+2. Will read each game in the pgn file.
+3. Will parse the moves in the game in reverse. If the game has 40 moves, it will visit first the end position at 40th move, 39th move and so on.
+4. In every position visited the chess engine specified in --engine [engine] will be run at multipv 2 at a given maxtime from --maxtime [time in sec]. We are interested on saving the 1st best score from multipv 1 call it (bs1) and the 2nd best score from multipv 2 call it (bs2).
+5. Basically when the engine shows that the side to move has a decisive advantage say bs1 >= 300 cp (centipawn) and bs2 is not winning say bs2 <= 50 cp then the program will save that position in interesting.epd file. Take a look at the example epd output in section D. The ce (centipawn evaluation) has a value of 323. That is actually bs1. And that of bs2 is at c2 "bestscore2: -28"; in this case bs2 is -28 cp.
+6. The program has score thresholds which will control if the position is saved or not. The value 300 cp can be controlled by the user via the parameter [minbest1score1](https://github.com/fsmosca/chess-chiller/blob/0c2349964372bb641ee1e0c327583ced16510e24/chess-chiller.py#L417) currently hard-coded but later will be exposed as an option. And that 50 cp is also a parameter called maxbest2score1. If you want the program to generate mate positions, just set minbest1score1 to 30000 and maxbest2score1 to 500. The code would look like this.\
+`if bs1 >= minbest1score1 and bs2 <= maxbest2score1, then save this position.`
+7. There are some enhancements to save the position or not, one of those is, if the side to move is in-check, don't save such position. Another one is if the best move is a capture and this position is not complicated according to the analyzing engine, such position is also not saved.
+
