@@ -6,6 +6,7 @@ Requirements:
     * python 3
     * python-chess v0.26.0 or up, https://github.com/niklasf/python-chess
     * Analysis engine that supports multipv and movetime commands
+    * PGN file with games
     
 """
 
@@ -144,7 +145,7 @@ def abs_pinned(board, color):
 
 def analyze_game(game, engine, enginefn, hash_val, thread_val,
                  analysis_start_move_num,
-                 outepdfn, gcnt, engname, mintime=2.0, maxtime=10.0,
+                 outepdfn, gcnt, engname, mintime=5.0, maxtime=15.0,
                  minscorediffcheck=25, minbs1th1=2000,
                  minbs1th2=1000, minbs1th3=500,
                  maxbs2th1=300, maxbs2th2=200,
@@ -196,6 +197,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
         logging.info('{}'.format(board.fen()))
         logging.info('game move: {}'.format(curboard.san(g_move)))
         
+        # piece value conditions
         pcval = piece_value(curboard)
         if pcval < minpiecevalue:
             logging.warning('Skip this pos piece value {} is below minimmum of {}'.format(pcval, minpiecevalue))
@@ -349,7 +351,7 @@ def main():
                 'some user defined score thresholds', epilog='%(prog)s')    
     parser.add_argument('-i', '--inpgn', help='input pgn file',
                         required=True)
-    parser.add_argument('-o', '--outepd', help='output epd file, default=interesting.epd',
+    parser.add_argument('-o', '--outepd', help='output epd file, (default=interesting.epd)',
                         default='interesting.epd', required=False)
     parser.add_argument('-e', '--engine', help='engine file or path',
                         required=True)
@@ -357,12 +359,12 @@ def main():
                         default=1, type=int, required=False)
     parser.add_argument('-a', '--hash', help='engine hash in MB (default=128)',
                         default=128, type=int, required=False)
-    parser.add_argument('-w', '--weight', help='weight file for NN engine',
+    parser.add_argument('-w', '--weight', help='weight file for NN engine like Lc0',
                         required=False)
-    parser.add_argument('-n', '--mintime', help='analysis minimum time in sec (default=2.0)',
-                        default=2.0, type=float, required=False)
-    parser.add_argument('-x', '--maxtime', help='analysis maximum time in sec (default=10.0)',
-                        default=10.0, type=float, required=False)
+    parser.add_argument('-n', '--mintime', help='analysis minimum time in sec (default=5.0)',
+                        default=5.0, type=float, required=False)
+    parser.add_argument('-x', '--maxtime', help='analysis maximum time in sec (default=15.0)',
+                        default=15.0, type=float, required=False)
     parser.add_argument('--skipdraw', help='a flag to skip games with draw results',
                         action='store_true')
     parser.add_argument('--log', help='values can be debug, info, warning, error and critical (default=critical)',
@@ -373,8 +375,8 @@ def main():
                         action='store_true')
     parser.add_argument('--minpiecevalue', help='minimum piece value on the board, N=B=3, R=5, Q=9, (default=0)',
                         default=0, type=int, required=False)
-    parser.add_argument('--maxpiecevalue', help='maximum piece value on the board, N=B=3, R=5, Q=9, (default=0)',
-                        default=0, type=int, required=False)
+    parser.add_argument('--maxpiecevalue', help='maximum piece value on the board, N=B=3, R=5, Q=9, (default=62)',
+                        default=62, type=int, required=False)
 
     args = parser.parse_args()
 
@@ -403,7 +405,6 @@ def main():
     elif args.log == 'error':
         initialize_logger(logging.ERROR)
     else:
-        # Default
         initialize_logger(logging.CRITICAL)
    
     start_move = 16  # Stop the analysis when this move no. is reached
@@ -506,6 +507,8 @@ def main():
                      positional=positional,
                      minpiecevalue=minpiecevalue,
                      maxpiecevalue=maxpiecevalue)
+            
+            # Analyze another game
             game = chess.pgn.read_game(pgn)
         
     engine.quit()
