@@ -26,9 +26,19 @@ A flag used to saved only those positions when there is a piece of the side not 
 A flag used to ignore games with draw results. Useful when you are only interested on generating positions from games with 1-0 or 0-1 results.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --skipdraw`
 
+#### --maxtime [time in sec]
+An option to allow the engine to search at a maximum time in seconds.\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --maxtime 20.0`
+
+#### --mintime [time in sec]
+An option to limit the engine search time in seconds. By default the engine is set to search at a maximum time via --maxtime value. However during the search, if the best score of the position is only -500 or lower after the minimum search time and the mimum score threshold is 100, then the program will abort engine search to save analysis time.\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --mintime 5.0`
+
 #### --minpiecevalue [value]
-An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 62 from 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved.\
-`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`
+An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 0. The maximum is 62 or 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved.\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`\
+If you want interesting positions to be saved without this piece value restriction, just use\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe`
 
 #### --log [value]
 An option used to save logs to all.log file. value can be **debug, info, warning, error and critical**, default is critical. If you want to see all the logs including the engine analysis, use value debug. Error messages will be saved in error.log file.\
@@ -46,7 +56,7 @@ The board image from that epd.
 ### E. Process flow
 1. The script will read the pgn file given from --inpgn [user pgn file].
 2. Will read each game in the pgn file.
-3. Will parse the moves in the game in reverse. If the game has 40 moves, it will visit first the end position at 40th move, 39th move and so on.
+3. Will parse the moves in the game in reverse. If the game has 40 moves, it will visit first the end position at 40th move, 39th move 38th, 37th and so on.
 4. In every position visited the chess engine specified in --engine [engine] will be run at multipv 2 at a given maxtime from --maxtime [time in sec]. We are interested on saving the 1st best score from multipv 1 call it (bs1) and the 2nd best score from multipv 2 call it (bs2).
 5. Basically when the engine shows that the side to move has a decisive advantage say bs1 >= 300 cp (centipawn) and bs2 is not winning say bs2 <= 50 cp then the program will save that position in interesting.epd file. Take a look at the example epd output in section D. The ce (centipawn evaluation) has a value of 323. That is actually bs1. And that of bs2 is at c2 "bestscore2: -28"; in this case bs2 is -28 cp.
 6. The program has score thresholds which will control if the position is saved or not. The value 300 cp can be controlled by the user via the parameters minbs1th1 (minimum best score 1 threshold 1), maxbs2th1 (maximum best score 2 threshold 1), and 4 others which are currently hard-coded but later will be exposed as an option. And that 50 cp is also a parameter called maxbs2th1. If you want the program to generate mate positions, just set minbs1th1 to 30000 and maxbs2th1 to 500. The code would look like this.\
