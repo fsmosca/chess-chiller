@@ -1,2 +1,3 @@
 # Ignore pgn files
 *.pgn
+*.log
