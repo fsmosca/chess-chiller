@@ -13,9 +13,11 @@ Chess engine that supports multipv and movetime is Stockfish. Download it from h
 PGN file which contain game records can be downloaded from http://theweekinchess.com/
 
 ### B. Command line
-python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --threads 1 --hash 128 --mintime 5.0 --maxtime 20.0
-
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --threads 1 --hash 128`\
 Interesting positions will be saved in interesting.epd
+
+If your pgn filename has space say 'my blitz games.pgn', enclose it in double quotes.\ 
+`python chess-chiller.py --inpgn "my blitz games.pgn" --engine sf10.exe --threads 1 --hash 128`
 
 ### C. Options and flags
 #### --pin
@@ -25,6 +27,13 @@ A flag used to saved only those positions when there is a piece of the side not 
 #### --skipdraw
 A flag used to ignore games with draw results. Useful when you are only interested on generating positions from games with 1-0 or 0-1 results.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --skipdraw`
+
+#### --engine [uci chess engine]
+An option to set which uci engineto use. Place this chess engine in the same directory as the chess-chiller.py.\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe`
+
+If your engine is in a different directory say c:\engines\stockfish\sf10.exe\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine "c:\engines\stockfish\sf10.exe"`
 
 #### --maxtime [time in sec]
 An option to allow the engine to search at a maximum time in seconds.\
@@ -36,7 +45,8 @@ An option to limit the engine search time in seconds. By default the engine is s
 
 #### --minpiecevalue [value]
 An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 0. The maximum is 62 or 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved.\
-`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`
+
 If you want interesting positions to be saved without this piece value restriction, just use\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe`
 
