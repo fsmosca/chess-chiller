@@ -68,37 +68,38 @@ def piece_value(board):
     return pcvalue  
 
 
-def interesting_pos(board, bs1, bs2, mib1s1, mib1s2, mib1s3, mab2s1, mab2s2, mab2s3):
+def interesting_pos(board, bs1, bs2, minbs1th1, minbs1th2, minbs1th3,
+                   maxbs2th1, maxbs2th2, maxbs2th3):
     """ 
     board: board position
     bs1: bestscore1 from multipv 1
     bs2: bestscore2 from multipv 2
     
-    mib1s1: minimum best score1, threshold 1
-    mib1s2: minimum score2, threshold 2
-    mib1s3: minimum score3, threshold 3
+    minbs1th1: minimum best score 1 threshold 1
+    minbs1th2: minimum best score 1 threshold 2
+    minbs1th3: minimum best score 1 threshold 3
     
-    mib1s1 > mib1s2 > mib1s3
+    minbs1th1 > minbs1th2 > minbs1th3
     
-    mab2s1: maximum best score2, threshold 1
-    mab2s2: maximum best score2, threshold 2
-    mab2s3: maximum best score2, threshold 3
+    maxbs2th1: maximum best score 2 threshold 1
+    maxbs2th2: maximum best score 2 threshold 2
+    maxbs2th3: maximum best score 2 threshold 3
     
-    mab2s1 > mab2s2 > mab2s3
+    maxbs2th1 > maxbs2th2 > maxbs2th3
     
     """
     logging.info('bestscore1: {}, bestscore2: {}'.format(bs1, bs2))
-    if bs1 >= mib1s1:
+    if bs1 >= minbs1th1:
         # mate score
-        if bs1 >= 30000 and bs2 <= 2*mab2s1:
+        if bs1 >= 30000 and bs2 <= 2*maxbs2th1:
             return True
-        if bs2 <= mab2s1:
+        if bs2 <= maxbs2th1:
             return True
-    elif bs1 >= mib1s2:
-        if bs2 <= mab2s2:
+    elif bs1 >= minbs1th2:
+        if bs2 <= maxbs2th2:
             return True
-    elif bs1 >= mib1s3:
-        if bs2 <= mab2s3:
+    elif bs1 >= minbs1th3:
+        if bs2 <= maxbs2th3:
             return True
     
     logging.info('Not an interesting pos: {}'.format(board.fen()))
@@ -106,19 +107,20 @@ def interesting_pos(board, bs1, bs2, mib1s1, mib1s2, mib1s3, mab2s1, mab2s2, mab
     return False
 
 
-def positional_pos(board, bs1, bs2, mib1s1, mib1s2, mib1s3, mab2s1, mab2s2, mab2s3):
+def positional_pos(board, bs1, bs2, minbs1th1, minbs1th2, minbs1th3,
+                   maxbs2th1, maxbs2th2, maxbs2th3):
     """ 
     * The engine bestscore1 is not winning and bestscore2 is not lossing
-    * The score gap between bestscore1 and bestcore2 is small    
+    * The score gap between bestscore1 and bestcore2 is  generally smaller    
     """
-    if bs1 >= mib1s1 and bs1 <= mib1s1 + 50:
-        if bs2 <= mab2s1 and bs2 >= mab2s1 - 25:
+    if bs1 >= minbs1th1 and bs1 <= minbs1th1 + 50:
+        if bs2 <= maxbs2th1 and bs2 >= maxbs2th1 - 25:
             return True
-    if bs1 >= mib1s2 and bs1 <= mib1s1:
-        if bs2 <= mab2s2 and bs2 >= mab2s2 - 25:
+    if bs1 >= minbs1th2 and bs1 <= minbs1th1:
+        if bs2 <= maxbs2th2 and bs2 >= maxbs2th2 - 25:
             return True
-    if bs1 >= mib1s3 and bs1 <= mib1s2:
-        if bs2 <= mab2s3 and bs2 >= mab2s3 - 25:
+    if bs1 >= minbs1th3 and bs1 <= minbs1th2:
+        if bs2 <= maxbs2th3 and bs2 >= maxbs2th3 - 25:
             return True
     
     logging.info('Not positional: {}'.format(board.fen()))
@@ -143,13 +145,13 @@ def abs_pinned(board, color):
 def analyze_game(game, engine, enginefn, hash_val, thread_val,
                  analysis_start_move_num,
                  outepdfn, gcnt, engname, mintime=2.0, maxtime=10.0,
-                 minscorediffcheck=25, minbest1score1=2000,
-                 minbest1score2=1000, minbest1score3=500,
-                 maxbest2score1=300, maxbest2score2=200,
-                 maxbest2score3=100, weightsfile=None, skipdraw=True,
-                 pin=False, positional=False, minpiecevalue=62):
+                 minscorediffcheck=25, minbs1th1=2000,
+                 minbs1th2=1000, minbs1th3=500,
+                 maxbs2th1=300, maxbs2th2=200,
+                 maxbs2th3=100, weightsfile=None, skipdraw=False,
+                 pin=False, positional=False, minpiecevalue=0):
     """ """
-    
+
     limit = chess.engine.Limit(time=maxtime)
     
     # Copy orig game header to our epd output
@@ -217,6 +219,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
         bestmovechanges = 0  # Start comparing bestmove1 at depth 4
         tmpmove, oldtmpmove = None, None
         
+        # Run engine at multipv 2        
         with engine.analysis(board, limit, multipv=2) as analysis:
             for info in analysis:
                 time.sleep(0.01)
@@ -236,7 +239,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                         raw_pv = pv
                         
                         # Exit early if score is below half of minbest1score3
-                        if t >= mintime and bs1 < minbest1score3/2:
+                        if t >= mintime and bs1 < minbs1th3/2:
                             logging.warning('Exit search early, current best score is only {}'.format(bs1))
                             break
                         
@@ -280,8 +283,8 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
         logging.info('scorediff       : {}'.format(bs1 - bs2))
         
         # Don't save positions if score is already bad
-        if bs1 < minbest1score3:
-            logging.warning('Skip this pos, score {} is below minbest1score3 of {}'.format(bs1, minbest1score3))
+        if bs1 < minbs1th3:
+            logging.warning('Skip this pos, score {} is below minbs1th3 of {}'.format(bs1, minbs1th3))
             continue
         
         # If complexity is 1 or less and if bestmove1 is a capture, skip this position
@@ -289,9 +292,9 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
             logging.warning('Skip this pos, bm1 is a capture and pos complexity is below 2')
             continue
         
-        if bs1 - bs2 < minbest1score3 - maxbest2score3:
+        if bs1 - bs2 < minbs1th3 - maxbs2th3:
             logging.warning('Skip this pos, min score diff of {} is below user min score diff of {}'.format(
-                    bs1 - bs2, minbest1score3 - maxbest2score3))
+                    bs1 - bs2, minbs1th3 - maxbs2th3))
             continue
         
         # Filter on --positional to skip positions
@@ -304,14 +307,12 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
         # Save epd if criteria is satisfied
         is_save = False
         if positional:
-            if positional_pos(board, bs1, bs2, minbest1score1, minbest1score2,
-                               minbest1score3, maxbest2score1, maxbest2score2,
-                               maxbest2score3):
+            if positional_pos(board, bs1, bs2, minbs1th1, minbs1th2,
+                               minbs1th3, maxbs2th1, maxbs2th2, maxbs2th3):
                 is_save = True
         else:
-            if interesting_pos(board, bs1, bs2, minbest1score1, minbest1score2,
-                               minbest1score3, maxbest2score1, maxbest2score2,
-                               maxbest2score3):
+            if interesting_pos(board, bs1, bs2, minbs1th1, minbs1th2,
+                               minbs1th3, maxbs2th1, maxbs2th2, maxbs2th3):
                 is_save = True
                 
         if is_save:
@@ -365,8 +366,8 @@ def main():
                         'position if not stm piece is pinned', action='store_true')
     parser.add_argument('--positional', help='a flag to save positional positions',
                         action='store_true')
-    parser.add_argument('--minpiecevalue', help='minimum piece value on the board, N=B=3, R=5, Q=9, (default=62)',
-                        default=62, type=int, required=False)
+    parser.add_argument('--minpiecevalue', help='minimum piece value on the board, N=B=3, R=5, Q=9, (default=0)',
+                        default=0, type=int, required=False)
 
     args = parser.parse_args()
 
@@ -402,26 +403,27 @@ def main():
     # Adjust score thresholds to save interesting positions
     # (1) Positional score threshold, if flag --positional is set
     if positional:
-        minbest1score1 = 100  # cp, threshold 1
-        minbest1score2 = 50   # cp, threshold 2
-        minbest1score3 = 0    # cp, threshold 3
-        maxbest2score1 = 50   # cp, threshold 4
-        maxbest2score2 = 0   # cp, threshold 5
-        maxbest2score3 = -50  # cp, threshold 6
+        minbs1th1 = 100  # min bs1 (best score 1) threshold 1 in cp (centipawn)
+        minbs1th2 = 50
+        minbs1th3 = 0
+        maxbs2th1 = 50   # max bs2 (best score 2) threshold 1
+        maxbs2th2 = 0
+        maxbs2th3 = -50
+    # (2) Other score thresholds
     else:
-        minbest1score1 = 1000  # cp, threshold 1
-        minbest1score2 = 500  # cp, threshold 2
-        minbest1score3 = 300  # cp, threshold 3
-        maxbest2score1 = 300  # cp, threshold 4
-        maxbest2score2 = 200  # cp, threshold 5
-        maxbest2score3 = 150   # cp, threshold 6
+        minbs1th1 = 300
+        minbs1th2 = 100
+        minbs1th3 = -50
+        maxbs2th1 = 150
+        maxbs2th2 = 50
+        maxbs2th3 = -100
         
     # Calculate minimum score diff check, while engine is seaching we exit
     # early if minscorediffcheck is not satisfied.
     scoredifflist = []
-    scoredifflist.append(minbest1score1 - maxbest2score1)
-    scoredifflist.append(minbest1score2 - maxbest2score2)
-    scoredifflist.append(minbest1score3 - maxbest2score3)
+    scoredifflist.append(minbs1th1 - maxbs2th1)
+    scoredifflist.append(minbs1th2 - maxbs2th2)
+    scoredifflist.append(minbs1th3 - maxbs2th3)
     minscorediffcheck = min(scoredifflist)/2
     
     logging.info('pgn file: {}'.format(pgnfn))    
@@ -429,12 +431,12 @@ def main():
     logging.info('mininum time               : {}s'.format(mintime))
     logging.info('maximum time               : {}s'.format(maxtime))
     logging.info('mininum score diff check   : {}'.format(minscorediffcheck))
-    logging.info('mininum best 1 score 1     : {}'.format(minbest1score1))
-    logging.info('mininum best 1 score 2     : {}'.format(minbest1score2))
-    logging.info('mininum best 1 score 3     : {}'.format(minbest1score3))
-    logging.info('maximum best 2 score 1     : {}'.format(maxbest2score1))
-    logging.info('maximum best 2 score 2     : {}'.format(maxbest2score2))
-    logging.info('maximum best 2 score 3     : {}'.format(maxbest2score3))
+    logging.info('mininum best score 1 th 1  : {}'.format(minbs1th1))
+    logging.info('mininum best score 1 th 2  : {}'.format(minbs1th2))
+    logging.info('mininum best score 1 th 3  : {}'.format(minbs1th3))
+    logging.info('maximum best score 2 th 1  : {}'.format(maxbs2th1))
+    logging.info('maximum best score 2 th 2  : {}'.format(maxbs2th2))
+    logging.info('maximum best score 2 th 3  : {}'.format(maxbs2th3))
     logging.info('stm is not in check        : {}'.format('Yes'))
     logging.info('stop analysis move number  : {}'.format(start_move))
             
@@ -484,12 +486,12 @@ def main():
                      mintime=mintime,
                      maxtime=maxtime,
                      minscorediffcheck=minscorediffcheck,
-                     minbest1score1=minbest1score1,
-                     minbest1score2=minbest1score2,    
-                     minbest1score3=minbest1score3,
-                     maxbest2score1=maxbest2score1,
-                     maxbest2score2=maxbest2score2,    
-                     maxbest2score3=maxbest2score3,
+                     minbs1th1=minbs1th1,
+                     minbs1th2=minbs1th2,    
+                     minbs1th3=minbs1th3,
+                     maxbs2th1=maxbs2th1,
+                     maxbs2th2=maxbs2th2,    
+                     maxbs2th3=maxbs2th3,
                      weightsfile=weightsfile,
                      skipdraw=skipdraw,
                      pin=pin,
