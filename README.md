@@ -40,6 +40,10 @@ An option used to control the number of pieces (not kings and not pawns) remaini
 If you want interesting positions to be saved without this piece value restriction, just use\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe`
 
+#### --maxpiecevalue [value]
+An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 62. If you want ending positions where the maximum piece value total from both sides is 10 or 2 rooks or less use --maxpiecevalue 10.\
+`python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --maxpiecevalue 10`
+
 #### --log [value]
 An option used to save logs to all.log file. value can be **debug, info, warning, error and critical**, default is critical. If you want to see all the logs including the engine analysis, use value debug. Error messages will be saved in error.log file.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --log debug`
