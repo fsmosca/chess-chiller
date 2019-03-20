@@ -92,7 +92,7 @@ def interesting_pos(board, bs1, bs2, minbs1th1, minbs1th2, minbs1th3,
     logging.info('bestscore1: {}, bestscore2: {}'.format(bs1, bs2))
     if bs1 >= minbs1th1:
         # mate score
-        if bs1 >= 30000 and bs2 <= 2*maxbs2th1:
+        if bs1 >= 30000 and bs2 <= min(2000, 2*maxbs2th1):
             return True
         if bs2 <= maxbs2th1:
             return True
