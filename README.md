@@ -16,7 +16,7 @@ PGN file which contain game records can be downloaded from http://theweekinchess
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --threads 1 --hash 128`\
 Interesting positions will be saved in interesting.epd
 
-If your pgn filename has space say 'my blitz games.pgn', enclose it in double quotes.\ 
+If your pgn filename has space say 'my blitz games.pgn', enclose it in double quotes.\
 `python chess-chiller.py --inpgn "my blitz games.pgn" --engine sf10.exe --threads 1 --hash 128`
 
 ### C. Options and flags
