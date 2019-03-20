@@ -144,14 +144,12 @@ def abs_pinned(board, color):
 
 
 def analyze_game(game, engine, enginefn, hash_val, thread_val,
-                 analysis_start_move_num,
-                 outepdfn, gcnt, engname, mintime=5.0, maxtime=15.0,
-                 minscorediffcheck=25, minbs1th1=2000,
-                 minbs1th2=1000, minbs1th3=500,
-                 maxbs2th1=300, maxbs2th2=200,
-                 maxbs2th3=100, weightsfile=None, skipdraw=False,
-                 pin=False, positional=False, minpiecevalue=0,
-                 maxpiecevalue=62):
+                 analysis_start_move_num, outepdfn, gcnt, engname, dullfn,
+                 mintime=5.0, maxtime=15.0, minscorediffcheck=25,
+                 minbs1th1=2000, minbs1th2=1000, minbs1th3=500,
+                 maxbs2th1=300, maxbs2th2=200, maxbs2th3=100,
+                 weightsfile=None, skipdraw=False, pin=False,
+                 positional=False, minpiecevalue=0, maxpiecevalue=62):
     """ """
 
     limit = chess.engine.Limit(time=maxtime)
@@ -322,12 +320,11 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                                minbs1th3, maxbs2th1, maxbs2th2, maxbs2th3):
                 is_save = True
                 
-        if is_save:
-            logging.warning('Save this position!!')
-            ae_oper = 'Analyzing engine: ' + engname
-            complexity_oper = 'Complexity: ' +  str(bestmovechanges)
-            bs2_oper = 'bestscore2: ' + str(bs2)
-            new_epd = board.epd(
+        # Create new epd
+        ae_oper = 'Analyzing engine: ' + engname
+        complexity_oper = 'Complexity: ' +  str(bestmovechanges)
+        bs2_oper = 'bestscore2: ' + str(bs2)
+        new_epd = board.epd(
                     bm = bm1,
                     ce = bs1,
                     sm = g_move,
@@ -340,8 +337,18 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                     c1 = complexity_oper,
                     c2 = bs2_oper,
                     c3 = ae_oper)
-            print(new_epd)
+        
+        # Save this new epd to either interesting.epd or dull.epd
+        if is_save:
+            logging.info('Save this position to {}'.format(outepdfn))
             with open(outepdfn, 'a') as f:
+                f.write('{}\n'.format(new_epd))
+        else:
+            # Save all pos to dull.epd that were analyzed to a maxtime but
+            # failed to be saved in interesting.epd. It can be useful to
+            # improve the algorith by examing these positions visually.
+            logging.info('Saved to {}'.format(dullfn))            
+            with open(dullfn, 'a') as f:
                 f.write('{}\n'.format(new_epd))
 
     
@@ -408,6 +415,7 @@ def main():
         initialize_logger(logging.CRITICAL)
    
     start_move = 16  # Stop the analysis when this move no. is reached
+    dullfn = 'dull.epd'  # Save uninteresting positions in this file
     
     # Adjust score thresholds to save interesting positions
     # (1) Positional score threshold, if flag --positional is set
@@ -492,6 +500,7 @@ def main():
                      outepdfn,
                      gcnt,
                      engname,
+                     dullfn,
                      mintime=mintime,
                      maxtime=maxtime,
                      minscorediffcheck=minscorediffcheck,
