@@ -149,7 +149,8 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                  minbs1th2=1000, minbs1th3=500,
                  maxbs2th1=300, maxbs2th2=200,
                  maxbs2th3=100, weightsfile=None, skipdraw=False,
-                 pin=False, positional=False, minpiecevalue=0):
+                 pin=False, positional=False, minpiecevalue=0,
+                 maxpiecevalue=62):
     """ """
 
     limit = chess.engine.Limit(time=maxtime)
@@ -199,6 +200,10 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
         if pcval < minpiecevalue:
             logging.warning('Skip this pos piece value {} is below minimmum of {}'.format(pcval, minpiecevalue))
             continue
+        
+        if pcval > maxpiecevalue:
+            logging.warning('Skip this pos and game piece value {} is above maximum of {}'.format(pcval, maxpiecevalue))
+            break
         
         # Skip this position if --pin is set and no one of the not stm piece is pinned
         if pin and not abs_pinned(board, board.turn ^ 1):
@@ -368,6 +373,8 @@ def main():
                         action='store_true')
     parser.add_argument('--minpiecevalue', help='minimum piece value on the board, N=B=3, R=5, Q=9, (default=0)',
                         default=0, type=int, required=False)
+    parser.add_argument('--maxpiecevalue', help='maximum piece value on the board, N=B=3, R=5, Q=9, (default=0)',
+                        default=0, type=int, required=False)
 
     args = parser.parse_args()
 
@@ -383,6 +390,7 @@ def main():
     pin = args.pin
     positional = args.positional
     minpiecevalue = args.minpiecevalue
+    maxpiecevalue = args.maxpiecevalue
     
     # Define logging levels
     if args.log == 'debug':
@@ -496,7 +504,8 @@ def main():
                      skipdraw=skipdraw,
                      pin=pin,
                      positional=positional,
-                     minpiecevalue=minpiecevalue)
+                     minpiecevalue=minpiecevalue,
+                     maxpiecevalue=maxpiecevalue)
             game = chess.pgn.read_game(pgn)
         
     engine.quit()
