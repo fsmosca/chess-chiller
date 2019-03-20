@@ -384,6 +384,18 @@ def main():
                         default=0, type=int, required=False)
     parser.add_argument('--maxpiecevalue', help='maximum piece value on the board, N=B=3, R=5, Q=9, (default=62)',
                         default=62, type=int, required=False)
+    parser.add_argument('--minbs1th1', help='minimum best score 1 threshold 1 (default=2000)',
+                        default=2000, type=int, required=False)
+    parser.add_argument('--minbs1th2', help='minimum best score 1 threshold 2 (default=1000)',
+                        default=1000, type=int, required=False)
+    parser.add_argument('--minbs1th3', help='minimum best score 1 threshold 3 (default=500)',
+                        default=500, type=int, required=False)
+    parser.add_argument('--maxbs2th1', help='maximum best score 2 threshold 1 (default=300)',
+                        default=300, type=int, required=False)
+    parser.add_argument('--maxbs2th2', help='maximum best score 2 threshold 2 (default=200)',
+                        default=200, type=int, required=False)
+    parser.add_argument('--maxbs2th3', help='maximum best score 3 threshold 3 (default=100)',
+                        default=100, type=int, required=False)
 
     args = parser.parse_args()
 
@@ -428,12 +440,12 @@ def main():
         maxbs2th3 = -50
     # (2) Other score thresholds
     else:
-        minbs1th1 = 300
-        minbs1th2 = 100
-        minbs1th3 = -50
-        maxbs2th1 = 150
-        maxbs2th2 = 50
-        maxbs2th3 = -100
+        minbs1th1 = args.minbs1th1
+        minbs1th2 = args.minbs1th2
+        minbs1th3 = args.minbs1th3
+        maxbs2th1 = args.maxbs2th1
+        maxbs2th2 = args.maxbs2th2
+        maxbs2th3 = args.maxbs2th3
         
     # Calculate minimum score diff check, while engine is seaching we exit
     # early if minscorediffcheck is not satisfied.
