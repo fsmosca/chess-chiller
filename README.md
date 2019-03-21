@@ -58,6 +58,35 @@ An option used to control the number of pieces (not kings and not pawns) remaini
 An option used to save logs to all.log file. value can be **debug, info, warning, error and critical**, default is critical. If you want to see all the logs including the engine analysis, use value debug. Error messages will be saved in error.log file.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --log debug`
 
+#### --minbs1th1 [value]
+An option called minimum best score 1 threshold 1. Default is 2000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th1. With that default value of 2000 cp or around 2 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th1, see the following option.
+
+#### --maxbs2th1 [value]
+An option called maximum best score 2 threshold 1. Default is 300 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th1. This is used together with minbs1th1. Example give a position we analyze it with an engine searching for best move at multipv 2. If bs1 is 2500 and bs2 is 200 that means we can consider this position as interesting.\
+`if bs1 >= minbs1th1 and bs2 <= maxbs2th1 then save this position`
+
+Example program epd output.\
+`8/4k3/2K4p/4p2P/2P5/8/8/8 w - - bm Kd5; ce 31980; sm Kd5; acd 40; acs 15; fmvn 76; hmvc 0; pv Kd5 e4 Kxe4 Kf6 c5; c0 "Carlsen, Magnus - Popov, Ivan RUS, World Blitz 2018, St Petersburg RUS, 2018.12.29, R1.1"; c1 "Complexity: 1"; c2 "bestscore2: 0"; c3 "Analyzing engine: Stockfish 10 64 POPCNT";`
+
+![](https://i.imgur.com/vSbXpVU.png "White to move")
+
+In the output epd, there are 2 scores that are important to us.
+1. ce 31980;
+2. c2 "bestscore2: 0";
+
+That ce and c2 are called opcodes. ce is centipawn evaluation and c2 is comment2.\
+bs1 = ce = 31980\
+bs2 = bestscore2 = 0
+
+bs1 is the best score from multipv 1 of engine analysis.\
+bs2 is the best score from multipv 2 of engine analysis.
+
+Our options are:\
+minbs1th1 = 2000\
+maxbs2th1 = 300
+
+Since bs1 is greater than or equal to minbs1th1 and bs2 is less than or equal to maxbs2th1 then we can consider this position as interesting.
+
 ### D. Output
 An example output epd would look like this.
 
