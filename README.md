@@ -35,6 +35,8 @@ An option to set which uci engineto use. Place this chess engine in the same dir
 If your engine is in a different directory say c:\engines\stockfish\sf10.exe\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine "c:\engines\stockfish\sf10.exe"`
 
+In this repo there is Stockfish 10 engine in Engine directory. You can use it with chess-chiller. Those exe files are from https://stockfishchess.org/download/
+
 #### --maxtime [time in sec]
 An option to allow the engine to search at a maximum time in seconds.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --maxtime 20.0`
@@ -60,6 +62,9 @@ An option used to save logs to all.log file. value can be **debug, info, warning
 
 #### --minbs1th1 [value]
 An option called minimum best score 1 threshold 1. Default is 2000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th1. With that default value of 2000 cp or around 2 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th1, see the following option.
+
+Example command line.\
+`python chess-chiller.py --inpgn WorldBlitz2018.pgn --engine stockfish_10_x64.exe --minbs1th1 1000`
 
 #### --maxbs2th1 [value]
 An option called maximum best score 2 threshold 1. Default is 300 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th1. This is used together with minbs1th1. Example give a position we analyze it with an engine searching for best move at multipv 2. If bs1 is 2500 and bs2 is 200 that means we can consider this position as interesting.\
