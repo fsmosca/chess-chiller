@@ -35,7 +35,7 @@ An option to set which uci engineto use. Place this chess engine in the same dir
 If your engine is in a different directory say c:\engines\stockfish\sf10.exe\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine "c:\engines\stockfish\sf10.exe"`
 
-In this repo there is Stockfish 10 engine in Engine directory. You can use it with chess-chiller. Those exe files are from https://stockfishchess.org/download/
+In this repo there is Stockfish 10 engine in Engine directory. You can use it with chess-chiller. Those exe files are from https://stockfishchess.org/download/. You can also find the source codes on that link.
 
 #### --maxtime [time in sec]
 An option to allow the engine to search at a maximum time in seconds.\
