@@ -92,6 +92,24 @@ maxbs2th1 = 300
 
 Since bs1 is greater than or equal to minbs1th1 and bs2 is less than or equal to maxbs2th1 then we can consider this position as interesting.
 
+#### --minbs1th2 [value]
+An option called minimum best score 1 threshold 2. Default is 1000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th2. With that default value of 1000 cp or around 1 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th2.
+
+Example command line.\
+`python chess-chiller.py --inpgn WorldBlitz2018.pgn --engine stockfish_10_x64.exe --minbs1th2 700`
+
+#### --maxbs2th2 [value]
+An option called maximum best score 2 threshold 2. Default is 200 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th2. This is used together with minbs1th2.
+
+#### --minbs1th3 [value]
+An option called minimum best score 1 threshold 3. Default is 500 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th3. With that default value of 500 cp or around 1 rook advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th3.
+
+Example command line.\
+`python chess-chiller.py --inpgn WorldBlitz2018.pgn --engine stockfish_10_x64.exe --minbs1th3 300`
+
+#### --maxbs2th3 [value]
+An option called maximum best score 2 threshold 3. Default is 100 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th3. This is used together with minbs1th3.
+
 ### D. Output
 An example output epd would look like this.
 
@@ -107,7 +125,29 @@ The board image from that epd.
 3. Will parse the moves in the game in reverse. If the game has 40 moves, it will visit first the end position at 40th move, 39th move 38th, 37th and so on.
 4. In every position visited the chess engine specified in --engine [engine] will be run at multipv 2 at a given maxtime from --maxtime [time in sec]. We are interested on saving the 1st best score from multipv 1 call it (bs1) and the 2nd best score from multipv 2 call it (bs2).
 5. Basically when the engine shows that the side to move has a decisive advantage say bs1 >= 300 cp (centipawn) and bs2 is not winning say bs2 <= 50 cp then the program will save that position in interesting.epd file. Take a look at the example epd output in section D. The ce (centipawn evaluation) has a value of 323. That is actually bs1. And that of bs2 is at c2 "bestscore2: -28"; in this case bs2 is -28 cp.
-6. The program has score thresholds which will control if the position is saved or not. The value 300 cp can be controlled by the user via the parameters minbs1th1 (minimum best score 1 threshold 1), maxbs2th1 (maximum best score 2 threshold 1), and 4 others which are currently hard-coded but later will be exposed as an option. And that 50 cp is also a parameter called maxbs2th1. If you want the program to generate mate positions, just set minbs1th1 to 30000 and maxbs2th1 to 500. The code would look like this.\
-`if bs1 >= minbs1th1 and bs2 <= maxbs2th1, then save this position.`
+6. The program has 6 score thresholds which will control if the position is saved or not. These are:
+1) minbs1th1 and maxbs2th1
+2) minbs1th2 and maxbs2th2
+3) minbs1th3 and maxbs2th3
+
+They are used in pairs and should follow the scoring hierarchy.
+* minbs1th1 > minbs1th2 > minbs1th3 or minbs1th1 is greater than minbs1th2 and minbs1th2 is greater than minbs1th3.
+* maxbs2th1 > maxbs2th2 > maxbs2th3
+
+Example situation:\
+You want to save positions where the side to move is not losing but it is not winning either. You could imagine the bs1 (best score from multipv 1 of engine analysis) is not below -50 cp (not a losing score) and bs1 is not above +50 cp (not a winning score). Set the following option values.
+
+minbs1th2 = +51\
+minbs1th3 = -50
+
+Then set the limit of bs2, typically it should be around 100 cp below minbs1th3, and maxbs2th2 > maxbs2th3.
+
+maxbs2th2 = -50\
+maxbs2th3 = -150
+
+So given bs1 and bs2 from engine analysis we can say,
+
+`if bs1 >= minbs1th3 and bs1 < minbs1th2 and bs2 <= maxbs2th3 then save this position.`
+
 7. There are some enhancements to save the position or not, one of those is, if the side to move is in-check, don't save such position. Another one is if the best move is a capture and this position is not complicated according to the analyzing engine, such position is also not saved.
 
