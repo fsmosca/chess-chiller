@@ -125,28 +125,25 @@ The board image from that epd.
 3. Will parse the moves in the game in reverse. If the game has 40 moves, it will visit first the end position at 40th move, 39th move 38th, 37th and so on.
 4. In every position visited the chess engine specified in --engine [engine] will be run at multipv 2 at a given maxtime from --maxtime [time in sec]. We are interested on saving the 1st best score from multipv 1 call it (bs1) and the 2nd best score from multipv 2 call it (bs2).
 5. Basically when the engine shows that the side to move has a decisive advantage say bs1 >= 300 cp (centipawn) and bs2 is not winning say bs2 <= 50 cp then the program will save that position in interesting.epd file. Take a look at the example epd output in section D. The ce (centipawn evaluation) has a value of 323. That is actually bs1. And that of bs2 is at c2 "bestscore2: -28"; in this case bs2 is -28 cp.
-6. The program has 6 score thresholds which will control if the position is saved or not. These are:
-1) minbs1th1 and maxbs2th1
-2) minbs1th2 and maxbs2th2
-3) minbs1th3 and maxbs2th3
-
-They are used in pairs and should follow the scoring hierarchy.
-* minbs1th1 > minbs1th2 > minbs1th3 or minbs1th1 is greater than minbs1th2 and minbs1th2 is greater than minbs1th3.
-* maxbs2th1 > maxbs2th2 > maxbs2th3
-
+6. The program has 6 score thresholds which will control if the position is saved or not. These are:\
+minbs1th1 and maxbs2th1\
+minbs1th2 and maxbs2th2\
+minbs1th3 and maxbs2th3\
+\
+They are used in pairs and should follow the scoring hierarchy.\
+minbs1th1 > minbs1th2 > minbs1th3 or minbs1th1 is greater than minbs1th2 and minbs1th2 is greater than minbs1th3.\
+maxbs2th1 > maxbs2th2 > maxbs2th3\
+\
 Example situation:\
-You want to save positions where the side to move is not losing but it is not winning either. You could imagine the bs1 (best score from multipv 1 of engine analysis) is not below -50 cp (not a losing score) and bs1 is not above +50 cp (not a winning score). Set the following option values.
-
+You want to save positions where the side to move is not losing but it is not winning either. You could imagine the bs1 (best score from multipv 1 of engine analysis) is not below -50 cp (not a losing score) and bs1 is not above +50 cp (not a winning score). Set the following option values.\
+\
 minbs1th2 = +51\
-minbs1th3 = -50
-
-Then set the limit of bs2, typically it should be around 100 cp below minbs1th3, and maxbs2th2 > maxbs2th3.
-
+minbs1th3 = -50\
+Then set the limit of bs2, typically it should be around 100 cp below minbs1th3, and maxbs2th2 > maxbs2th3.\
 maxbs2th2 = -50\
-maxbs2th3 = -150
-
-So given bs1 and bs2 from engine analysis we can say,
-
+maxbs2th3 = -150\
+\
+So given bs1 and bs2 from engine analysis we can say.\
 `if bs1 >= minbs1th3 and bs1 < minbs1th2 and bs2 <= maxbs2th3 then save this position.`
 
 7. There are some enhancements to save the position or not, one of those is, if the side to move is in-check, don't save such position. Another one is if the best move is a capture and this position is not complicated according to the analyzing engine, such position is also not saved.
