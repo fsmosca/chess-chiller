@@ -46,7 +46,7 @@ An option to limit the engine search time in seconds. By default the engine is s
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --mintime 5.0`
 
 #### --minpiecevalue [value]
-An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 0. The maximum is 62 or 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved.\
+An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 0. The maximum is 62 or 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved. See section \
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`
 
 If you want interesting positions to be saved without this piece value restriction, just use\
@@ -61,13 +61,13 @@ An option used to save logs to all.log file. value can be **debug, info, warning
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --log debug`
 
 #### --minbs1th1 [value]
-An option called minimum best score 1 threshold 1. Default is 2000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th1. With that default value of 2000 cp or around 2 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th1, see the following option.
+An option called minimum best score 1 threshold 1. Default is 2000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th1. With that default value of 2000 cp or around 2 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th1, see the following option. See also section E.6 on how this is used.
 
 Example command line.\
 `python chess-chiller.py --inpgn WorldBlitz2018.pgn --engine stockfish_10_x64.exe --minbs1th1 1000`
 
 #### --maxbs2th1 [value]
-An option called maximum best score 2 threshold 1. Default is 300 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th1. This is used together with minbs1th1. Example give a position we analyze it with an engine searching for best move at multipv 2. If bs1 is 2500 and bs2 is 200 that means we can consider this position as interesting.\
+An option called maximum best score 2 threshold 1. Default is 300 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th1. This is used together with minbs1th1. Example give a position we analyze it with an engine searching for best move at multipv 2. If bs1 is 2500 and bs2 is 200 that means we can consider this position as interesting. See also section E.6 on how this is used.\
 `if bs1 >= minbs1th1 and bs2 <= maxbs2th1 then save this position`
 
 Example program epd output.\
@@ -93,22 +93,22 @@ maxbs2th1 = 300
 Since bs1 is greater than or equal to minbs1th1 and bs2 is less than or equal to maxbs2th1 then we can consider this position as interesting.
 
 #### --minbs1th2 [value]
-An option called minimum best score 1 threshold 2. Default is 1000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th2. With that default value of 1000 cp or around 1 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th2.
+An option called minimum best score 1 threshold 2. Default is 1000 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th2. With that default value of 1000 cp or around 1 queens advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th2. See also section E.6 on how this is used.
 
 Example command line.\
 `python chess-chiller.py --inpgn WorldBlitz2018.pgn --engine stockfish_10_x64.exe --minbs1th2 700`
 
 #### --maxbs2th2 [value]
-An option called maximum best score 2 threshold 2. Default is 200 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th2. This is used together with minbs1th2.
+An option called maximum best score 2 threshold 2. Default is 200 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th2. This is used together with minbs1th2. See also section E.6 on how this is used.
 
 #### --minbs1th3 [value]
-An option called minimum best score 1 threshold 3. Default is 500 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th3. With that default value of 500 cp or around 1 rook advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th3.
+An option called minimum best score 1 threshold 3. Default is 500 cp. This is used to control the best score 1 from multipv 1 of the engine analysis. In order for the position to be interesting, the bs1 (best score 1) from multipv 1 of engine analysis should not be lower than minbs1th3. With that default value of 500 cp or around 1 rook advantage, we are looking for positions that is winning. This option is useful when used together with the option maxbs2th3. See also section E.6 on how this is used.
 
 Example command line.\
 `python chess-chiller.py --inpgn WorldBlitz2018.pgn --engine stockfish_10_x64.exe --minbs1th3 300`
 
 #### --maxbs2th3 [value]
-An option called maximum best score 2 threshold 3. Default is 100 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th3. This is used together with minbs1th3.
+An option called maximum best score 2 threshold 3. Default is 100 cp. This is used to control the best score 2 from multipv 2 of the engine analysis. In order for the position to be interesting, the bs2 (best score 2) from multipv 2 of engine analysis should not be higher than maxbs2th3. This is used together with minbs1th3. See also section E.6 on how this is used.
 
 ### D. Output
 An example output epd would look like this.
