@@ -255,7 +255,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                                 and not 'upperbound' in info \
                                 and depth >= 4:
                             tmpmove = info['pv'][0]
-                            if tmpmove is not None and tmpmove != oldtmpmove:
+                            if oldtmpmove is not None and tmpmove != oldtmpmove:
                                 bestmovechanges += 1
                             
                     elif multipv == 2:
