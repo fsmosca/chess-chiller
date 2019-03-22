@@ -134,7 +134,7 @@ They are used in pairs and should follow the scoring hierarchy.\
 minbs1th1 > minbs1th2 > minbs1th3 or minbs1th1 is greater than minbs1th2 and minbs1th2 is greater than minbs1th3.\
 maxbs2th1 > maxbs2th2 > maxbs2th3\
 \
-Example situation:\
+Example situation 1:\
 You want to save positions where the side to move is not losing but it is not winning either. You could imagine the bs1 (best score from multipv 1 of engine analysis) is not below -50 cp (not a losing score) and bs1 is not above +50 cp (not a winning score). Set the following option values.\
 \
 minbs1th2 = +51\
@@ -144,7 +144,36 @@ maxbs2th2 = -50\
 maxbs2th3 = -150\
 \
 So given bs1 and bs2 from engine analysis we can say.\
-`if bs1 >= minbs1th3 and bs1 < minbs1th2 and bs2 <= maxbs2th3 then save this position.`
+`if bs1 >= minbs1th3 and bs1 < minbs1th2 and bs2 <= maxbs2th3 then save this position.`\
+\
+Example analysis session:\
+command line\
+`python chess-chiller.py --inpgn "tatagpa19.pgn" --engine "stockfish_10_x64_popcnt.exe" --threads 1 --hash 128 --mintime 3 --maxtime 10 --minbs1th2 51 --minbs1th3 -50 --maxbs2th3 -150 --maxbs2th2 -100`\
+\
+EPD output:\
+`8/8/8/4Nn1p/2K5/6k1/8/8 w - - bm Ng6; ce -9; sm Ng6; acd 40; acs 10; fmvn 82; hmvc 1; pv Ng6 Ng7 Kd3 Ne6 Ke4; c0 "Rapport, Richard - Shankland, Samuel, 81st Tata Steel GpA, Wijk aan Zee NED, 2019.01.13, R2.4"; c1 "Complexity: 0"; c2 "bestscore2: -6015"; c3 "Analyzing engine: Stockfish 10 64 POPCNT";`\
+\
+![](https://i.imgur.com/VhgIXFc.png "white to move")\
+bs1 = -9\
+bs2 = -6015\
+minbs1th2 = 51\
+minbs1th3 = -50\
+maxbs2th3 = -150<br>
+Since bs1 >= minbs1th3 and bs1 <= minbs1th2 and bs2 <= maxbs2th3, we save this position to interesting.epd file.\
+\
+Currently the program has 3 ways of saving interesting positions.\
+It can save position with high score, medium score and low score. High score is controlled by minbs1th1/maxbs2th1, the medium is minbs1th2/maxbs2th2 and the low score minbs1th3/maxbs2th3.\
+\
+Example situation 2:\
+You want to save a position where the side to move has a very advantageous position, set minbs1th1 to 3000 or 3 queens and maxbs2th1 at 500. Then at the medium set minbs1th2 at 500 and maxbs2th2 at 200 and finally at low score, set minbs1th3 at 100 and maxbs2th3 at 0.\
+\
+If bs1 = 5000 and bs2 = 400, it will be save because it is under the high score threshold.\
+`if bs1 >= 3000 and bs2 <= 500, save this position.`\
+\
+However if bs1 = 1000 and bs2 = 150, it will be saved under the medium score threshold.\
+`if bs1 >= 500 and bs2 <= 150, save this position.`\
+\
+If it is not saved under the conditions of high score and medium score thresholds, then it will be tested under the low score threshold. The low score threshold is threshold 3 or minbs1th3/maxbs2th3.
 
 7. There are some enhancements to save the position or not, one of those is, if the side to move is in-check, don't save such position. Another one is if the best move is a capture and this position is not complicated according to the analyzing engine, such position is also not saved.
 
