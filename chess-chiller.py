@@ -48,6 +48,24 @@ def initialize_logger(logger_level):
     formatter = logging.Formatter("%(asctime)s [%(threadName)-10.10s] [%(funcName)-12.12s] [%(levelname)-5.5s] > %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+    
+    
+def save_as_pgn(outpgnfn, game, fen, bm):
+    """ Save the epd in pgn format """
+    mygame = chess.pgn.Game()
+    mynode = mygame
+
+    with open(outpgnfn, 'a') as f:
+        for k, v in game.headers.items():
+            if k == 'Result':
+                mygame.headers[k] = '*'
+            else:
+                mygame.headers[k] = v
+        mygame.headers['FEN'] = fen
+            
+        mynode = mynode.add_main_variation(bm)
+        
+        f.write('{}\n\n'.format(mygame))
 
 
 def piece_value(board):
@@ -144,7 +162,8 @@ def abs_pinned(board, color):
 
 
 def analyze_game(game, engine, enginefn, hash_val, thread_val,
-                 analysis_start_move_num, outepdfn, gcnt, engname, dullfn,
+                 analysis_start_move_num, outepdfn, gcnt, engname,
+                 dullfn, outpgnfn,
                  mintime=5.0, maxtime=15.0, minscorediffcheck=25,
                  minbs1th1=2000, minbs1th2=1000, minbs1th3=500,
                  maxbs2th1=300, maxbs2th2=200, maxbs2th3=100,
@@ -185,6 +204,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
         
         g_move = board.pop()
         curboard = board
+        fen = curboard.fen()
         
         # Print the fen before g_move is made on the board
         poscnt += 1  
@@ -343,6 +363,8 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
             logging.info('Save this position to {}'.format(outepdfn))
             with open(outepdfn, 'a') as f:
                 f.write('{}\n'.format(new_epd))
+                
+            save_as_pgn(outpgnfn, game, fen, bm1)
         else:
             # Save all pos to dull.epd that were analyzed to a maxtime but
             # failed to be saved in interesting.epd. It can be useful to
@@ -428,6 +450,7 @@ def main():
    
     start_move = 16  # Stop the analysis when this move no. is reached
     dullfn = 'dull.epd'  # Save uninteresting positions in this file
+    outpgnfn = 'interesting.pgn'
     
     # Adjust score thresholds to save interesting positions
     # (1) Positional score threshold, if flag --positional is set
@@ -513,6 +536,7 @@ def main():
                      gcnt,
                      engname,
                      dullfn,
+                     outpgnfn,
                      mintime=mintime,
                      maxtime=maxtime,
                      minscorediffcheck=minscorediffcheck,
