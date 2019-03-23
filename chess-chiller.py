@@ -296,7 +296,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                 except (KeyError):
                     pass
                 except Exception as e:
-                    logging.error('Error in parsing engine analysis', exc_info=e)
+                    logging.error('Unexpected exception {} in in parsing engine analysis'.format(e))
 
         time.sleep(0.1)
         
