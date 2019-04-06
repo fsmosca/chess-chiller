@@ -23,6 +23,7 @@ VERSION = 'v0.1'
 
 
 def initialize_logger(logger_level):
+    """ Save logs to file, use RotatingFileHandler to avoid disk space overrun """
     logger = logging.getLogger()
     logger.setLevel(logger_level)
      
@@ -70,15 +71,15 @@ def save_as_pgn(outpgnfn, game, fen, bm):
 
 def piece_value(board):
     """ Returns piece value of the board except pawns and kings """
-    epd = board.epd().split()[0]
-    bn = epd.count('n') * 3
-    bb = epd.count('b') * 3
-    br = epd.count('r') * 5
-    bq = epd.count('q') * 9
-    wn = epd.count('N') * 3
-    wb = epd.count('B') * 3
-    wr = epd.count('R') * 5
-    wq = epd.count('Q') * 9
+    board_pieces = board.epd().split()[0]
+    bn = board_pieces.count('n') * 3
+    bb = board_pieces.count('b') * 3
+    br = board_pieces.count('r') * 5
+    bq = board_pieces.count('q') * 9
+    wn = board_pieces.count('N') * 3
+    wb = board_pieces.count('B') * 3
+    wr = board_pieces.count('R') * 5
+    wq = board_pieces.count('Q') * 9
     
     pcvalue = bn + bb + br + bq + wn + wb + wr + wq
     
@@ -169,7 +170,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                  maxbs2th1=300, maxbs2th2=200, maxbs2th3=100,
                  weightsfile=None, skipdraw=False, pin=False,
                  positional=False, minpiecevalue=0, maxpiecevalue=62):
-    """ """
+    """ Analyze positons in the game and save interesting and dull positions to a file """
 
     limit = chess.engine.Limit(time=maxtime)
     
