@@ -135,7 +135,7 @@ minbs1th1 > minbs1th2 > minbs1th3 or minbs1th1 is greater than minbs1th2 and min
 maxbs2th1 > maxbs2th2 > maxbs2th3\
 \
 Example situation 1:\
-You want to save positions where the side to move is not losing but it is not winning either. You could imagine the bs1 (best score from multipv 1 of engine analysis) is not below -50 cp (not a losing score) and bs1 is not above +50 cp (not a winning score). Set the following option values.\
+You want to save positions where the side to move is not losing but it is not winning either. You could imagine the bs1 is not below -50 cp (not a losing score) and bs2 is not above +50 cp (not a winning score). Set the following option values.\
 \
 minbs1th2 = +51\
 minbs1th3 = -50\
