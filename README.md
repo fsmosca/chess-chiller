@@ -46,7 +46,7 @@ An option to limit the engine search time in seconds. By default the engine is s
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --mintime 5.0`
 
 #### --minpiecevalue [value]
-An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 0. The maximum is 62 or 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved. See section \
+An option used to control the number of pieces (not kings and not pawns) remaining on the board for saved positions. Default value is 0. The maximum is 62 or 2*Q + 4*R + 4*B + 4*N, where Q=9, R=5, B=3 and N=3. If you want middle phase positions, you may use for example 2Q + 4R + 2B + 2N or 50. Any positions with less than 50 piece value will not be saved.\
 `python chess-chiller.py --inpgn aeroflotopa19.pgn --engine sf10.exe --minpiecevalue 50`
 
 If you want interesting positions to be saved without this piece value restriction, just use\
