@@ -169,7 +169,8 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                  minbs1th1=2000, minbs1th2=1000, minbs1th3=500,
                  maxbs2th1=300, maxbs2th2=200, maxbs2th3=100,
                  weightsfile=None, skipdraw=False, pin=False,
-                 positional=False, minpiecevalue=0, maxpiecevalue=62):
+                 positional=False, minpiecevalue=0, maxpiecevalue=62,
+                 disable_complexity=False):
     """ Analyze positons in the game and save interesting and dull positions to a file """
 
     limit = chess.engine.Limit(time=maxtime)
@@ -314,7 +315,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
             continue
         
         # If complexity is 1 or less and if bestmove1 is a capture, skip this position
-        if board.is_capture(bm1) and bestmovechanges <= 1:
+        if board.is_capture(bm1) and not disable_complexity and bestmovechanges <= 1:
             logging.warning('Skip this pos, bm1 is a capture and pos complexity is below 2')
             continue
         
@@ -419,6 +420,11 @@ def main():
                         default=200, type=int, required=False)
     parser.add_argument('--maxbs2th3', help='maximum best score 3 threshold 3 (default=100)',
                         default=100, type=int, required=False)
+    parser.add_argument('--analysis-start-move', help='move number to start the analysis (default=16)',
+                        default=16, type=int, required=False)
+    parser.add_argument('--disable-complexity',
+                        help='a flag to exclude complexity as a criteria in saving the position',
+                        action='store_true')
 
     args = parser.parse_args()
 
@@ -435,6 +441,7 @@ def main():
     positional = args.positional
     minpiecevalue = args.minpiecevalue
     maxpiecevalue = args.maxpiecevalue
+    disable_complexity = args.disable_complexity
     
     # Define logging levels
     if args.log == 'debug':
@@ -449,7 +456,7 @@ def main():
     else:
         initialize_logger(logging.CRITICAL)
    
-    start_move = 16  # Stop the analysis when this move no. is reached
+    start_move = args.analysis_start_move
     dullfn = 'dull.epd'  # Save uninteresting positions in this file
     outpgnfn = 'interesting.pgn'
     
@@ -492,6 +499,7 @@ def main():
     logging.info('maximum best score 2 th 3  : {}'.format(maxbs2th3))
     logging.info('stm is not in check        : {}'.format('Yes'))
     logging.info('stop analysis move number  : {}'.format(start_move))
+    logging.info(f'disable complexity         : {disable_complexity}')
             
     # Define analyzing engine
     engine = chess.engine.SimpleEngine.popen_uci(enginefn)
@@ -552,7 +560,8 @@ def main():
                      pin=pin,
                      positional=positional,
                      minpiecevalue=minpiecevalue,
-                     maxpiecevalue=maxpiecevalue)
+                     maxpiecevalue=maxpiecevalue,
+                     disable_complexity=args.disable_complexity)
             
             # Analyze another game
             game = chess.pgn.read_game(pgn)
