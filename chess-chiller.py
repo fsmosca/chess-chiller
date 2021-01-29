@@ -19,7 +19,7 @@ import chess.pgn
 import chess.engine
 
 
-__version__ = 'v0.2'
+__version__ = 'v0.3'
 __author__ = 'fsmosca'
 
 
@@ -74,6 +74,13 @@ def save_as_pgn(outpgnfn, curboard, game, fen, bm, is_save_last_move=False):
             mynode = mynode.add_main_variation(move)
 
         mynode = mynode.add_main_variation(bm)
+
+        board = mynode.board()
+        if board.is_game_over():
+            if board.is_checkmate():
+                mygame.headers['Result'] = '1-0' if not board.turn else '0-1'
+            else:
+                mygame.headers['Result'] = '1/2-1/2'
 
         f.write('{}\n\n'.format(mygame))
 
