@@ -19,7 +19,8 @@ import chess.pgn
 import chess.engine
 
 
-VERSION = 'v0.1'
+__version__ = 'v0.2'
+__author__ = 'fsmosca'
 
 
 def initialize_logger(logger_level):
@@ -51,10 +52,15 @@ def initialize_logger(logger_level):
     logger.addHandler(handler)
     
     
-def save_as_pgn(outpgnfn, game, fen, bm):
+def save_as_pgn(outpgnfn, curboard, game, fen, bm, is_save_last_move=False):
     """ Save the epd in pgn format """
+    move = None
     mygame = chess.pgn.Game()
     mynode = mygame
+
+    if is_save_last_move:
+        move = curboard.pop()
+        fen = curboard.fen()
 
     with open(outpgnfn, 'a') as f:
         for k, v in game.headers.items():
@@ -63,9 +69,12 @@ def save_as_pgn(outpgnfn, game, fen, bm):
             else:
                 mygame.headers[k] = v
         mygame.headers['FEN'] = fen
-            
+
+        if is_save_last_move and move is not None:
+            mynode = mynode.add_main_variation(move)
+
         mynode = mynode.add_main_variation(bm)
-        
+
         f.write('{}\n\n'.format(mygame))
 
 
@@ -170,7 +179,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
                  maxbs2th1=300, maxbs2th2=200, maxbs2th3=100,
                  weightsfile=None, skipdraw=False, pin=False,
                  positional=False, minpiecevalue=0, maxpiecevalue=62,
-                 disable_complexity=False):
+                 disable_complexity=False, save_last_move=False):
     """ Analyze positons in the game and save interesting and dull positions to a file """
 
     limit = chess.engine.Limit(time=maxtime)
@@ -366,7 +375,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
             with open(outepdfn, 'a') as f:
                 f.write('{}\n'.format(new_epd))
                 
-            save_as_pgn(outpgnfn, game, fen, bm1)
+            save_as_pgn(outpgnfn, curboard, game, fen, bm1, save_last_move)
         else:
             # Save all pos to dull.epd that were analyzed to a maxtime but
             # failed to be saved in interesting.epd. It can be useful to
@@ -377,7 +386,7 @@ def analyze_game(game, engine, enginefn, hash_val, thread_val,
 
     
 def main():
-    parser = argparse.ArgumentParser(prog='Chess Chiller {}'.format(VERSION), 
+    parser = argparse.ArgumentParser(prog='Chess Chiller {}'.format(__version__),
                 description='Generates interesting positions using an engine and ' +
                 'some user defined score thresholds', epilog='%(prog)s')    
     parser.add_argument('-i', '--inpgn', help='input pgn file',
@@ -424,6 +433,9 @@ def main():
                         default=16, type=int, required=False)
     parser.add_argument('--disable-complexity',
                         help='a flag to exclude complexity as a criteria in saving the position',
+                        action='store_true')
+    parser.add_argument('--save-last-move',
+                        help='a flag to save the last move before the blunder move in a game.',
                         action='store_true')
 
     args = parser.parse_args()
@@ -561,7 +573,8 @@ def main():
                      positional=positional,
                      minpiecevalue=minpiecevalue,
                      maxpiecevalue=maxpiecevalue,
-                     disable_complexity=args.disable_complexity)
+                     disable_complexity=args.disable_complexity,
+                     save_last_move=args.save_last_move)
             
             # Analyze another game
             game = chess.pgn.read_game(pgn)
